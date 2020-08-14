@@ -1,11 +1,13 @@
 #%% Imports
 import os
 from sklearn.model_selection import train_test_split
+from sklearn.utils import shuffle
 import tensorflow as tf
 from tensorflow.keras import datasets, layers, models
 import numpy as np
 import pandas as pd
 from datetime import datetime
+
 
 #%% Helper Functions
 
@@ -21,11 +23,12 @@ games = pd.read_csv("./data/sudoku.csv")
 
 quizzes = games['quizzes']
 solutions = games['solutions']
+quizzes, solutions = shuffle(np.array(quizzes), np.array(solutions))
 
 features = []
 labels = []
 
-fraction_used = 1
+fraction_used = 10
 
 for i in range(int(len(quizzes)/fraction_used)):
    temp_arr = [norm(int(char)) for char in quizzes[i]]
