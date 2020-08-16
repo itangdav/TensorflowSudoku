@@ -28,7 +28,7 @@ quizzes, solutions = shuffle(np.array(quizzes), np.array(solutions))
 features = []
 labels = []
 
-fraction_used = 10
+fraction_used = 1
 
 for i in range(int(len(quizzes)/fraction_used)):
    temp_arr = [norm(int(char)) for char in quizzes[i]]
@@ -89,8 +89,7 @@ model.compile(optimizer='adam', loss=tf.keras.losses.SparseCategoricalCrossentro
 
 history = model.fit(x_train, y_train, batch_size=32, epochs=1, validation_data=(x_test, y_test), callbacks=[tensorboard_callback])
 
-#Tensorboard loading
-os.system('cmd /k "tensorboard --logdir logs/scalars"')
+
 
 #%% Saving Model
 
@@ -147,3 +146,5 @@ print(solved)
 print("End")
 
 
+#Tensorboard loading
+os.system('cmd /k "tensorboard --logdir logs/scalars"')
