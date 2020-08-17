@@ -12,10 +12,10 @@ from datetime import datetime
 #%% Helper Functions
 
 def norm(array):
-   return array/9
+   return (array/9-0.5)
 
 def invNorm(array):
-   return 9*array
+   return 9*(array+0.5)
 
 #%% Processing Data
 
@@ -61,20 +61,21 @@ def create_model():
     model.add(layers.BatchNormalization())
     model.add(layers.Conv2D(64, kernel_size=(3,3), activation='relu', padding='same'))
     model.add(layers.BatchNormalization())
-    model.add(layers.Conv2D(64, kernel_size=(1,1), activation='relu', padding='same'))
+    model.add(layers.Conv2D(128, kernel_size=(1,1), activation='relu', padding='same'))
     model.add(layers.Flatten())
     model.add(layers.Dense(81*9))
     model.add(layers.Reshape((81, 9)))
     model.add(layers.Activation('softmax'))
     return model
 
-# model = create_model()
-# model.summary()
+model = create_model()
 
 #%% Loading Model
-
-model = create_model()
+#
 model.load_weights('./checkpoints/latest_checkpoint')
+
+
+
 model.summary()
 
 #%%Logging Loss
@@ -87,7 +88,7 @@ tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 model.compile(optimizer='adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
 
-history = model.fit(x_train, y_train, batch_size=32, epochs=1, validation_data=(x_test, y_test), callbacks=[tensorboard_callback])
+history = model.fit(x_train, y_train, batch_size=32, epochs=2, validation_data=(x_test, y_test), callbacks=[tensorboard_callback])
 
 
 
