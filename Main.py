@@ -3,7 +3,7 @@ import os
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 import tensorflow as tf
-from tensorflow.keras import datasets, layers, models
+from tensorflow.keras import layers, models
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -72,7 +72,7 @@ model = create_model()
 
 #%% Loading Model
 #
-model.load_weights('./checkpoints/latest_checkpoint')
+# model.load_weights('./checkpoints/latest_checkpoint')
 
 
 
@@ -85,7 +85,7 @@ tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 
 #%% Model Training
 
-model.compile(optimizer='adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+model.compile(optimizer='SGD', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
 
 history = model.fit(x_train, y_train, batch_size=32, epochs=2, validation_data=(x_test, y_test), callbacks=[tensorboard_callback])
@@ -120,7 +120,7 @@ def step_by_step(inputGame):
                     if missing[i][j] and prob[i][j]>= max:
                         max = prob[i][j]
                         ind = i*9 + j
-                    elif missing[i][j] and prob[i][j]>0.8:
+                    elif missing[i][j] and prob[i][j]>0.95:
                         inputGame[i][j] = predict[i][j]
             inputGame[int(ind/9)][(ind%9)] = predict[int(ind/9)][(ind%9)]
             inputGame = norm(inputGame)
