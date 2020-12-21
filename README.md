@@ -31,4 +31,4 @@ One of the key ideas is that I would use each step not to guess the entire board
 Also, through extensive testing, I have found that using a kernel size of 3x3 for the first layer is the most effective, as it is able to capture the logic that each of the smaller 3x3 boxes can contain at most one of each digit. The other two layers have kernel size 3x3 and 1x1 because it appears to be optimal for testing accuracy, although I cannot find a convincing logical reason why it is the case. 
 
 I used Tensorboard for the following visualization:
-![Training Image](/images/TensorflowSudoku2.jpg)
+![Training Image](/TensorflowSudoku2.jpg)
