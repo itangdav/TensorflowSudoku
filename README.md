@@ -29,3 +29,6 @@ This code heavily uses numpy and Tensorflow packages for Python.
 One of the key ideas is that I would use each step not to guess the entire board, but to put in any guesses that the algorithm outputs as 100% confident, as well as the highest confidence guess and feed this new board back into the neural network. This means that, although the test accuracy may say something like 80%, if we only use its most confident guesses, and then feed the new board back into the neural network, it is able to reach much higher actual accuracies. Most boards that are solved using this step by step method have between 0-4 mistakes in the final board. 
 
 Also, through extensive testing, I have found that using a kernel size of 3x3 for the first layer is the most effective, as it is able to capture the logic that each of the smaller 3x3 boxes can contain at most one of each digit. The other two layers have kernel size 3x3 and 1x1 because it appears to be optimal for testing accuracy, although I cannot find a convincing logical reason why it is the case. 
+
+I used Tensorboard for the following visualization:
+
