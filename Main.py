@@ -1,5 +1,7 @@
 #%% Imports
 import os
+
+import progressbar as progressbar
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 import tensorflow as tf
@@ -34,7 +36,7 @@ quizzes, solutions = shuffle(np.array(quizzes), np.array(solutions))
 features = []
 labels = []
 
-fraction_used = 1
+fraction_used = 100
 
 for i in range(int(len(quizzes)/fraction_used)):
    temp_arr = [norm(int(char)) for char in quizzes[i]]
@@ -143,20 +145,25 @@ def solve(game):
 
 #%% Testing
 
-total = 10000
+total = 20 #must be <1 mil
 correct = 0
-print(quizzes)
+quizzes, solutions = shuffle(np.array(quizzes), np.array(solutions))
 
-test_board = '600120384008459072000006005000264030070080006940003000310000050089700000502000190'
+with progressbar.ProgressBar(max_value=total) as bar:
+    for i in range(total):
+        test_board = quizzes[i]
+        test_solution = solutions[i]
 
-test_solution = '695127384138459672724836915851264739273981546946573821317692458489715263562348197'
+        test_solution = np.array([int(j) for j in test_solution]).reshape((9, 9))
 
-test_solution = np.array([int(j) for j in test_solution]).reshape((9,9))
+        solved = solve(test_board)
 
-solved = solve(test_board)
+        if(np.all(solved-test_solution == 0)):
+            correct+=1
 
-print(solved-test_solution)
-print(solved)
+        bar.update(i)
+
+print("Solved ", 100 * correct / total,"%")
 
 #%% End
 
