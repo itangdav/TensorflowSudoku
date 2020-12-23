@@ -8,6 +8,12 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 
+#%% GPU Stuff
+#print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    for gpu in gpus:
+        tf.config.experimental.set_memory_growth(gpu, True)
 
 #%% Helper Functions
 
@@ -72,7 +78,7 @@ model = create_model()
 
 #%% Loading Model
 #
-# model.load_weights('./checkpoints/latest_checkpoint')
+model.load_weights('./checkpoints/latest_checkpoint')
 
 
 
@@ -120,7 +126,8 @@ def step_by_step(inputGame):
                     if missing[i][j] and prob[i][j]>= max:
                         max = prob[i][j]
                         ind = i*9 + j
-                    elif missing[i][j] and prob[i][j]>0.95:
+                    elif missing[i][j] and prob[i][j]>=1:
+                        print("once")
                         inputGame[i][j] = predict[i][j]
             inputGame[int(ind/9)][(ind%9)] = predict[int(ind/9)][(ind%9)]
             inputGame = norm(inputGame)
@@ -136,10 +143,19 @@ def solve(game):
 
 #%% Testing
 
-test_board = '004300209005009001070060043006002087190007400050083000600000105003508690042910300'
+total = 10000
+correct = 0
+print(quizzes)
+
+test_board = '600120384008459072000006005000264030070080006940003000310000050089700000502000190'
+
+test_solution = '695127384138459672724836915851264739273981546946573821317692458489715263562348197'
+
+test_solution = np.array([int(j) for j in test_solution]).reshape((9,9))
 
 solved = solve(test_board)
 
+print(solved-test_solution)
 print(solved)
 
 #%% End
