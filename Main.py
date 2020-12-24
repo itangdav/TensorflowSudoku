@@ -98,7 +98,7 @@ tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 model.compile(optimizer='adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
 
-history = model.fit(x_train, y_train, batch_size=1024, epochs=2, validation_data=(x_test, y_test), callbacks=[tensorboard_callback])
+history = model.fit(x_train, y_train, batch_size=512, epochs=2, validation_data=(x_test, y_test), callbacks=[tensorboard_callback], use_multiprocessing=True)
 
 
 
@@ -151,7 +151,7 @@ def solve(game, solution):
 
 #%% Testing
 
-total = 20 #must be <1 mil
+total = 100 #must be <1 mil
 quizzes, solutions = shuffle(np.array(quizzes), np.array(solutions))
 
 #Multithreaded processing
