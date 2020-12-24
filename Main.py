@@ -1,7 +1,7 @@
 #%% Imports
 import os
 
-import progressbar as progressbar
+
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 import tensorflow as tf
@@ -9,10 +9,8 @@ from tensorflow.keras import layers, models
 import numpy as np
 import pandas as pd
 from datetime import datetime
-import queue
 import threading
 import multiprocessing
-import subprocess
 
 
 #%% GPU Stuff
@@ -41,7 +39,7 @@ quizzes, solutions = shuffle(np.array(quizzes), np.array(solutions))
 features = []
 labels = []
 
-fraction_used = 100
+fraction_used = 1
 
 for i in range(int(len(quizzes)/fraction_used)):
    temp_arr = [norm(int(char)) for char in quizzes[i]]
@@ -74,7 +72,7 @@ def create_model():
     model.add(layers.BatchNormalization())
     model.add(layers.Conv2D(64, kernel_size=(3,3), activation='relu', padding='same'))
     model.add(layers.BatchNormalization())
-    model.add(layers.Conv2D(128, kernel_size=(1,1), activation='relu', padding='same'))
+    model.add(layers.Conv2D(64, kernel_size=(1,1), activation='relu', padding='same'))
     model.add(layers.Flatten())
     model.add(layers.Dense(81*9))
     model.add(layers.Reshape((81, 9)))
@@ -84,7 +82,6 @@ def create_model():
 model = create_model()
 
 #%% Loading Model
-#
 model.load_weights('./checkpoints/latest_checkpoint')
 
 
@@ -98,10 +95,10 @@ tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 
 #%% Model Training
 
-model.compile(optimizer='SGD', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+model.compile(optimizer='adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
 
-history = model.fit(x_train, y_train, batch_size=32, epochs=2, validation_data=(x_test, y_test), callbacks=[tensorboard_callback])
+history = model.fit(x_train, y_train, batch_size=1024, epochs=2, validation_data=(x_test, y_test), callbacks=[tensorboard_callback])
 
 
 
