@@ -143,50 +143,60 @@ def step_by_step(inputGame):
 
 
 
-def solve(game):
+def solve(game, solution):
     game = norm(np.array([int(j) for j in game]).reshape((9,9,1)))
     game = step_by_step(game)
-    return game
+
+    if(np.all(game-solution==0)):
+        return 1
+
+    return 0
 
 #%% Testing
 
-total = 100 #must be <1 mil
-global correct
-correct = 0
+total = 20 #must be <1 mil
 quizzes, solutions = shuffle(np.array(quizzes), np.array(solutions))
 
 #Multithreaded processing
-num_of_cores = multiprocessing.cpu_count()
+num_of_cores = round(multiprocessing.cpu_count()/2)
 
-q = queue.Queue()
+inQ = multiprocessing.Queue()
 for i in range(total):
-    q.put([quizzes[i], solutions[i]])
+    inQ.put([quizzes[i], solutions[i]])
 
-def worker():
-    global correct
+outQ = multiprocessing.Queue()
+
+def worker(inQ, outQ):
     while True:
-        item = q.get()
+        item = inQ.get()
+        if item is None:
+            break
         test_board = item[0]
         test_solution = item[1]
 
         test_solution = np.array([int(j) for j in test_solution]).reshape((9, 9))
 
-        solved = solve(test_board)
+        score = solve(test_board, test_solution)
 
-        if (np.all(solved - test_solution == 0)):
-            correct += 1
+        outQ.put(score)
 
-        q.task_done()
+def process_data(data_out, outQ, total):
+    for i in range(total):
+        ret = outQ.get()
+        data_out.append(ret)
 
+    return sum(data_out)
 
 print("Creating %d threads" % num_of_cores)
-for i in range(num_of_cores):
-     t = threading.Thread(target=worker)
-     t.daemon = True
-     t.start()
+workers = [threading.Thread(target=worker, args=(inQ, outQ)) for i in range(num_of_cores)]
+for w in workers:
+    w.start()
 
+data_out = []
 
-q.join() #Check if all finished
+correct = process_data(data_out, outQ, total)
+for w in workers:
+    inQ.put(None)
 
 print("Solved ", 100 * correct / total,"%")
 
