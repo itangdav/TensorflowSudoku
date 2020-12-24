@@ -9,6 +9,11 @@ from tensorflow.keras import layers, models
 import numpy as np
 import pandas as pd
 from datetime import datetime
+import queue
+import threading
+import multiprocessing
+import subprocess
+
 
 #%% GPU Stuff
 #print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
@@ -145,23 +150,43 @@ def solve(game):
 
 #%% Testing
 
-total = 20 #must be <1 mil
+total = 100 #must be <1 mil
+global correct
 correct = 0
 quizzes, solutions = shuffle(np.array(quizzes), np.array(solutions))
 
-with progressbar.ProgressBar(max_value=total) as bar:
-    for i in range(total):
-        test_board = quizzes[i]
-        test_solution = solutions[i]
+#Multithreaded processing
+num_of_cores = multiprocessing.cpu_count()
+
+q = queue.Queue()
+for i in range(total):
+    q.put([quizzes[i], solutions[i]])
+
+def worker():
+    global correct
+    while True:
+        item = q.get()
+        test_board = item[0]
+        test_solution = item[1]
 
         test_solution = np.array([int(j) for j in test_solution]).reshape((9, 9))
 
         solved = solve(test_board)
 
-        if(np.all(solved-test_solution == 0)):
-            correct+=1
+        if (np.all(solved - test_solution == 0)):
+            correct += 1
 
-        bar.update(i)
+        q.task_done()
+
+
+print("Creating %d threads" % num_of_cores)
+for i in range(num_of_cores):
+     t = threading.Thread(target=worker)
+     t.daemon = True
+     t.start()
+
+
+q.join() #Check if all finished
 
 print("Solved ", 100 * correct / total,"%")
 
