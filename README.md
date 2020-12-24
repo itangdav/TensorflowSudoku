@@ -33,4 +33,4 @@ Also, through extensive testing, I have found that using a kernel size of 3x3 fo
 I used Tensorboard for the following visualization:
 ![Training Image](/TensorflowSudoku2.jpg)
 
-Recently, I added compatability for running it with GPU, which I have tested on my pretty entry-level 1660 Super. As well, I added a test at the end to see the rate at which it can solve sudokus 100% correctly which hover around 75-90% on random tests.
+Recently, I added compatability for running it with GPU, which I have tested on my pretty entry-level 1660 Super. As well, I added a test at the end to see the rate at which it can solve sudokus correctly using the step-by-step procedure, for which it is able to do so at 100% accuracy on most batches of 100 random tests, dipping at most to 95%.
