@@ -46,16 +46,16 @@ for i in range(int(len(quizzes) / fraction_used)):
     temp_arr = [norm(int(char)) for char in quizzes[i]]
     features.append(np.array(temp_arr).reshape((9, 9, 1)))
 
-    if (i % 200000 == 0):
-        print(str(i / 20000) + "%")
+    if (i % (len(quizzes)/5) == 0):
+        print(str(i / (len(quizzes)/50)) + "%")
 
 # We represent a 1 as label 0, 2 as label 1, etc.
 
 for i in range(int(len(solutions) / fraction_used)):
     temp_arr = [(int(char) - 1) for char in solutions[i]]
     labels.append(np.array(temp_arr).reshape((81, 1)))
-    if (i % 200000 == 0):
-        print(str(i / 20000 + 50) + "%")
+    if (i % (len(quizzes)/5) == 0):
+        print(str(i / (len(quizzes)/50) + 50) + "%")
 
 features = np.array(features)
 labels = np.array(labels)
